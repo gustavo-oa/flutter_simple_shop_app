@@ -13,6 +13,7 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final messagens = ScaffoldMessenger.of(context);
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(product.imageUrl),
@@ -55,11 +56,21 @@ class ProductItem extends StatelessWidget {
                     ],
                   ),
                 ).then(
-                  (value) {
-                    final canDelete = value ?? false;
-                    if (canDelete) {
-                      Provider.of<ProductList>(context, listen: false)
-                          .removeProduct(product);
+                  (value) async {
+                    if (value ?? false) {
+                      try {
+                        await Provider.of<ProductList>(context, listen: false)
+                            .removeProduct(product);
+                      } catch (error) {
+                        messagens.showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.black54,
+                            content: Text(
+                              error.toString(),
+                            ),
+                          ),
+                        );
+                      }
                     }
                   },
                 );
